@@ -18,12 +18,12 @@ int perform_tests(int argc, char** argv)
     printf("inverse modulo (question 1)\n");
     int64_t a, b, m;
     m = 0x7fffffff;
-    a = 12345;
+    a = 47268;
     b = invert_mod(a, m);
     printf("L'inverse de %" PRId64 " modulo %ld est %ld\n", a, m, b);
     printf("Vérification: %" PRId64 " * %" PRId64 " = %" PRId64
            " (mod %" PRId64 ")\n",
-        a, b, (a * b) % m, m);
+        a, b, mod(a * b, m), m);
 
     return 0;
 }
