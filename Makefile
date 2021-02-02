@@ -13,7 +13,7 @@
 ################
 ## à modifier ##
 ################
-NOM = albus-dumbledore
+NOM = geyer-traini
 
 # FLAGS = -Wall -std=c99 -Wextra -pedantic -Werror
 FLAGS = -Wall -std=c99 -Wextra -pedantic -Werror -Wno-unused-parameter -Wno-unused-function
