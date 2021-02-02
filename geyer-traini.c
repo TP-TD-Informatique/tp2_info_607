@@ -27,8 +27,31 @@ int64_t invert_mod(int64_t a, int64_t m) {
  * Le tableau 'random' contient les 'nb' premiers nombres générés.
  * La fonction renvoie 1 si le générateur trouvé génère bien la liste donnée
  * et -1 sinon.
+ *
+ * Les équations sont :
+ * | (ax1 + c) = x2
+ * | (ax2 + c) = x3
+ * V
+ * | c = x2 - ax1
+ * | ax2 + x2 - ax1 = x3
+ *  a(x2 - x1) + x2 = x3
+ *       a(x2 - x1) = x3 - x2
+ *                a = (x3 - x2) / (x2 - x1)
+ * V
+ * | c = x2 - ax1
+ * | a = (x3 - x2) / (x2 - x1)
  */
 int LCG_crack(int nb, int64_t *random, int64_t *a, int64_t *c, int64_t *m) {
+    if (nb >= 3) {
+        *a = mod(random[2] - random[1], *m) * invert_mod(mod(random[1] - random[0], *m), *m);
+        *c = random[1] - (*a * random[0]);
+
+        *a = mod(*a, *m);
+        *c = mod(*c, *m);
+
+        return 1;
+    }
+
     return -1;
 }
 
