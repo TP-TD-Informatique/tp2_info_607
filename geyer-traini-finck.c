@@ -153,12 +153,13 @@ bool verif_LSFR(int nb, int *random, word *taps, int taille) {
  * sinon.
  */
 int LFSR_crack(int nb, int *random, word *taps) {
-    int is0 = 1;
-    for (int i = 0; i < nb; ++i) {
-        if (random[i] != 0) {
-            is0 = 0;
-            break;
-        }
+    bool is0 = true;
+    int i = 0;
+    while (is0 && i < nb) {
+        if (random[i] != 0)
+            is0 = false;
+
+        i++;
     }
     if (is0) return -1;
 
