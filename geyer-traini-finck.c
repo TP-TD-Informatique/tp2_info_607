@@ -118,36 +118,30 @@ int gauss(word *M, int nb_lignes) {
  * renvoie 1 si oui, -1 sinon
  */
 bool verif_LSFR(int nb, int *random, word *taps, int taille) {
-    /*int n = 0;
+    int n = 0;
     for (int i = 0; i < taille; ++i) {
-        n += random[i] << (taille - i);
+        n += random[i] << (taille - i - 1);
     }
-    DEBUG(0, "n : %d\n", n);
 
-    for (int i = taille; i < nb; ++i) {
+    for (int i = taille; i < nb; i++) {
         int b = 0;
         for (int j = 0; j < taille; j++) {
-            b ^= BIT(taille - j - 1, *taps) ? random[j + i] : 0;
+            b ^= BIT(j, *taps) ? BIT(j, n) : 0;
         }
+        n <<= 1;
         n += b;
-        DEBUG(0, "n : %d\n", n);
     }
 
-    return n == random;*/
+    bool isGood = true;
+    int i = 0;
+    while (isGood && i < nb) {
+        if (BIT(nb - i - 1, n) != random[i])
+            isGood = false;
 
-
-    for (int i = taille + 1; i < nb; i++) {
-        int b = 0;
-        for (int j = 0; j < taille; j++) {
-            b ^= BIT(taille - j - 1, *taps) ? random[j + i] : 0;
-        }
-
-        if (b != random[i]) {
-            return false;
-        }
+        i++;
     }
 
-    return true;
+    return isGood;
 }
 
 /*
@@ -172,22 +166,21 @@ int LFSR_crack(int nb, int *random, word *taps) {
     int isVerif = false;
     while (taille < nb && !isVerif) {
         word M[taille];
-        for (int i = 0; i < taille; ++i) {
+        for (int i = 0; i < taille; i++) {
             M[i] = 0;
-            for (int j = 0; j < taille; ++j) {
+            for (int j = 0; j < taille; j++) {
                 M[i] += random[i + j] << (taille - j);
             }
             M[i] += random[i + taille];
         }
 
         if (gauss(M, taille) == 1) {
-            for (int i = 0; i < taille; ++i) {
-                *taps += M[i] & 1;
+            *taps = 0;
+            for (int i = 0; i < taille; i++) {
+                *taps += (M[i] & 1) << (taille - i - 1);
             }
-            print_M(M, taille);
-            DEBUG(0, "taps : %d\n", *taps);
+
             isVerif = verif_LSFR(nb, random, taps, taille);
-            DEBUG(0, "isVerif : %d\n", isVerif);
         }
 
         taille++;
