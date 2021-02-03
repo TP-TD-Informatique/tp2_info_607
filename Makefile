@@ -13,7 +13,7 @@
 ################
 ## à modifier ##
 ################
-NOM = geyer-traini
+NOM = geyer-traini-finck
 
 # FLAGS = -Wall -std=c99 -Wextra -pedantic -Werror
 FLAGS = -Wall -std=c99 -Wextra -pedantic -Werror -Wno-unused-parameter -Wno-unused-function
@@ -35,7 +35,7 @@ all: $(NOM)
 $(NOM): $(FILES_O)
 	$(CC) $(FILES_O) -o $(NOM)
 
-albus-dumbledore.o: geyer-traini.c tp2.h
+albus-dumbledore.o: geyer-traini-finck.c tp2.h
 ifeq ($(USER),hyvernat)
 	$(CC) -c -o $@ $<
 else
