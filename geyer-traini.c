@@ -5,6 +5,7 @@
  * L3 groupe 3
  */
 
+#include <stdbool.h>
 #include "tp2.h"
 
 /*
@@ -63,7 +64,12 @@ int LCG_crack(int nb, int64_t *random, int64_t *a, int64_t *c, int64_t *m) {
     }
 
     if (nb >= 3) {
-        *a = mod(random[2] - random[1], *m) * invert_mod(mod(random[1] - random[0], *m), *m);
+        int64_t invert = invert_mod(mod(random[1] - random[0], *m), *m);
+        if (invert == 0) {
+            *a = mod(random[2] - random[1], *m) / mod(random[1] - random[0], *m);
+        } else {
+            *a = mod(random[2] - random[1], *m) * invert_mod(mod(random[1] - random[0], *m), *m);
+        }
         *c = random[1] - (*a * random[0]);
 
         *a = mod(*a, *m);
@@ -108,6 +114,43 @@ int gauss(word *M, int nb_lignes) {
 }
 
 /*
+ * vérifie si les taps génèrent bien la bonne suite
+ * renvoie 1 si oui, -1 sinon
+ */
+bool verif_LSFR(int nb, int *random, word *taps, int taille) {
+    /*int n = 0;
+    for (int i = 0; i < taille; ++i) {
+        n += random[i] << (taille - i);
+    }
+    DEBUG(0, "n : %d\n", n);
+
+    for (int i = taille; i < nb; ++i) {
+        int b = 0;
+        for (int j = 0; j < taille; j++) {
+            b ^= BIT(taille - j - 1, *taps) ? random[j + i] : 0;
+        }
+        n += b;
+        DEBUG(0, "n : %d\n", n);
+    }
+
+    return n == random;*/
+
+
+    for (int i = taille + 1; i < nb; i++) {
+        int b = 0;
+        for (int j = 0; j < taille; j++) {
+            b ^= BIT(taille - j - 1, *taps) ? random[j + i] : 0;
+        }
+
+        if (b != random[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/*
  * craque un générateur linéaire "fibonacci" en cherchant les "taps" qui
  * permettent de regénérer la suite.
  * Le tableau 'random' contient les 'nb' premiers bits générés par le
@@ -115,4 +158,40 @@ int gauss(word *M, int nb_lignes) {
  * La fonction renvoie 1 si les taps permettent de regénérer la suite, et -1
  * sinon.
  */
-int LFSR_crack(int nb, int *random, word *taps) { return -1; }
+int LFSR_crack(int nb, int *random, word *taps) {
+    int is0 = 1;
+    for (int i = 0; i < nb; ++i) {
+        if (random[i] != 0) {
+            is0 = 0;
+            break;
+        }
+    }
+    if (is0) return -1;
+
+    int taille = 1;
+    int isVerif = false;
+    while (taille < nb && !isVerif) {
+        word M[taille];
+        for (int i = 0; i < taille; ++i) {
+            M[i] = 0;
+            for (int j = 0; j < taille; ++j) {
+                M[i] += random[i + j] << (taille - j);
+            }
+            M[i] += random[i + taille];
+        }
+
+        if (gauss(M, taille) == 1) {
+            for (int i = 0; i < taille; ++i) {
+                *taps += M[i] & 1;
+            }
+            print_M(M, taille);
+            DEBUG(0, "taps : %d\n", *taps);
+            isVerif = verif_LSFR(nb, random, taps, taille);
+            DEBUG(0, "isVerif : %d\n", isVerif);
+        }
+
+        taille++;
+    }
+
+    return isVerif ? 1 : -1;
+}
