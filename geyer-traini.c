@@ -51,25 +51,14 @@ int LCG_crack(int nb, int64_t *random, int64_t *a, int64_t *c, int64_t *m) {
             int64_t y3 = random[4] - random[3];
             int64_t y4 = random[5] - random[4];
 
-            DEBUG(0, "y0 : %d\n", y0);
-            DEBUG(0, "y1 : %d\n", y1);
-            DEBUG(0, "y2 : %d\n", y2);
-            DEBUG(0, "y3 : %d\n", y3);
-            DEBUG(0, "y4 : %d\n", y4);
-
             // Calcul des z -> quantité = nbY >= 3 ? nbY -2 : 0
             int64_t z1 = (y2 * y0) - (y1 * y1);
             int64_t z2 = (y3 * y1) - (y2 * y2);
             int64_t z3 = (y4 * y2) - (y3 * y3);
 
-            DEBUG(0, "z1 : %d\n", z1);
-            DEBUG(0, "z2 : %d\n", z2);
-            DEBUG(0, "z3 : %d\n", z3);
-
             // pgcd
             int64_t pgcd = gcd(z1, z2);
             pgcd = pgcd < 0 ? -pgcd : pgcd;
-            DEBUG(0, "pgcd : %d\n", pgcd);
             *m = pgcd;
         } else
             return -1; // On n'a pas assez de nombres
