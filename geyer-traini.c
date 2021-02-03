@@ -86,7 +86,26 @@ int LCG_crack(int nb, int64_t *random, int64_t *a, int64_t *c, int64_t *m) {
 /*
  * diagonalise une matrice booléenne de taille n x n+1
  */
-int gauss(word *M, int nb_lignes) { return -1; }
+int gauss(word *M, int nb_lignes) {
+    for (int i = 0; i < nb_lignes; ++i) {
+        if (BIT(nb_lignes - i, M[i]) != 1) {
+            int j = i;
+            while (j < nb_lignes && BIT(nb_lignes - i, M[j]) == 0) // Cherche la ligne ou la colonne i vaut 1
+                j++;
+
+            if (j == nb_lignes)
+                return -1; // Si on n'a pas trouvé de ligne avec un 1 en colonne i
+
+            M[i] ^= M[j];
+        }
+
+        for (int j = 0; j < nb_lignes; j++)
+            if (j != i && BIT(nb_lignes - i, M[j]))
+                M[j] ^= M[i];
+    }
+
+    return 1;
+}
 
 /*
  * craque un générateur linéaire "fibonacci" en cherchant les "taps" qui
