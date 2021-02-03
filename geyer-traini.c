@@ -49,12 +49,10 @@ int LCG_crack(int nb, int64_t *random, int64_t *a, int64_t *c, int64_t *m) {
             int64_t y1 = random[2] - random[1];
             int64_t y2 = random[3] - random[2];
             int64_t y3 = random[4] - random[3];
-            int64_t y4 = random[5] - random[4];
 
             // Calcul des z -> quantité = nbY >= 3 ? nbY -2 : 0
             int64_t z1 = (y2 * y0) - (y1 * y1);
             int64_t z2 = (y3 * y1) - (y2 * y2);
-            int64_t z3 = (y4 * y2) - (y3 * y3);
 
             // pgcd
             int64_t pgcd = gcd(z1, z2);
